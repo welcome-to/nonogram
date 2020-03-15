@@ -23,10 +23,10 @@ class Board:
     def is_filled(self, row=None, column=None):
         if row is None == column is None:
             raise RuntimeError("Invalid data")
-        return all(lambda i: i != UNKNOWN, self.row(row) if row is not None else self.column(column))
+        return all((lambda i: i != UNKNOWN, self.row(row) if row is not None else self.column(column)))
 
     def is_complete(self):
-        return all(lambda r: self.is_filled(row=r),  range(self.size))
+        return all(map(lambda r: self.is_filled(row=r),  range(self.size)))
 
     def is_correct(self):
         pass
@@ -44,13 +44,20 @@ class Board:
 
 
 def update_line(line, pattern):
-    # здесь могли бы быть ваши эвристики
+    if sum(pattern) + len(pattern) - 1 == 15:
+        line = [True for _ in range(15)]
+        j = 0
+        for i in range(len(pattern)):
+            j += pattern[i]
+            if j + 1 < 15:
+                line[j+1]==False
+
     return line
 
 
 def main():
-    rows = [...]
-    columns = [...]
+    rows = [[15 for i in range(15)]]
+    columns = [[15 for i in range(15)]]
     board = Board(15, rows, columns)
 
     while not board.is_complete():
@@ -69,3 +76,7 @@ def main():
             raise RuntimeError("Эвристик не хватило")
 
         board = new_board
+    print(board.data)
+
+if __name__ == "__main__":
+    main()
