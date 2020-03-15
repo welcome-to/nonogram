@@ -23,7 +23,7 @@ class Board:
     def is_filled(self, row=None, column=None):
         if row is None == column is None:
             raise RuntimeError("Invalid data")
-        return all((lambda i: i != UNKNOWN, self.row(row) if row is not None else self.column(column)))
+        return all(map(lambda i: i != UNKNOWN, self.row(row) if row is not None else self.column(column)))
 
     def is_complete(self):
         return all(map(lambda r: self.is_filled(row=r),  range(self.size)))
@@ -33,14 +33,14 @@ class Board:
 
     def __eq__(self, other):
         # fixme
-        return True
+        return self.data == other.data
 
     def set_row(self, row, line):
         self.data[row] = copy(line)
 
     def set_column(self, column, line):
         for y in range(self.size):
-            self.data[y][column] = line[i]
+            self.data[y][column] = line[y]
 
 
 def update_line(line, pattern):
@@ -56,12 +56,12 @@ def update_line(line, pattern):
 
 
 def main():
-    rows = [[15 for i in range(15)]]
-    columns = [[15 for i in range(15)]]
+    rows = [[4],[8],[10],[11],[11],[11],[2,2,4],[1,3,2,3],[1,5,2,3],[1,5,2,3],[1,3,3,3],[2,4,2],[11],[9],[7]]
+    columns = [[5],[1,3],[1,2,3],[5,3],[3,4,3],[4,4,3],[5,2,3],[5,4],[7,5],[14],[6,6],[7],[11],[11],[9]]
     board = Board(15, rows, columns)
 
     while not board.is_complete():
-        new_board = Board(board.size, board.rows, board.columns)
+        new_board = Board(board.size, board.row_patterns, board.column_patterns)
         for i in range(board.size):
             row = board.row(i)
             new_row = update_line(row, board.row_patterns[i])
@@ -73,6 +73,7 @@ def main():
             new_board.set_column(j, new_column)
 
         if (new_board == board):
+            print(new_board.data)
             raise RuntimeError("Эвристик не хватило")
 
         board = new_board
