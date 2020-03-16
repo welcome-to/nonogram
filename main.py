@@ -65,10 +65,14 @@ def mark_from_exact_starts(line, border):
 def mark_missing_borders(line, pattern):
     return line
 
+def mark_too_short_missing(line, pattern):
+    return line
+
 def update_line(line, pattern):
     line = fill_exact_matches(line, pattern)
-    line = mark_missing_borders(line, pattern)
     line = mark_existing_centers(line, pattern)
+    line = mark_too_short_missing(line, pattern)
+    line = mark_missing_borders(line, pattern)
     line = mark_from_exact_starts(line, pattern)
     return line
 
