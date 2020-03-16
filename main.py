@@ -35,6 +35,9 @@ class Board:
         # fixme
         return self.data == other.data
 
+    def __str__(self):
+        return '\n'.join([' '.join([str(i)+ (2-len(str(i))) * ' ' for i in row]) for row in self.data])
+
     def set_row(self, row, line):
         self.data[row] = copy(line)
 
@@ -45,12 +48,12 @@ class Board:
 
 def update_line(line, pattern):
     if sum(pattern) + len(pattern) - 1 == 15:
-        line = [True for _ in range(15)]
+        line = [1 for _ in range(15)]
         j = 0
         for i in range(len(pattern)):
             j += pattern[i]
             if j + 1 < 15:
-                line[j+1]==False
+                line[j+1]==-1
 
     return line
 
@@ -73,11 +76,11 @@ def main():
             new_board.set_column(j, new_column)
 
         if (new_board == board):
-            print(new_board.data)
+            print(new_board)
             raise RuntimeError("Эвристик не хватило")
 
         board = new_board
-    print(board.data)
+    print(board)
 
 if __name__ == "__main__":
     main()
