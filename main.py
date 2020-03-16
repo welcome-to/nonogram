@@ -80,6 +80,7 @@ def mark_too_short_missing(line, pattern):
     return line
 
 def update_line(line, pattern):
+    print("Called update_line with pattern", pattern)
     line = fill_exact_matches(line, pattern)
     line = mark_existing_centers(line, pattern)
     line = mark_too_short_missing(line, pattern)
@@ -101,8 +102,8 @@ def main():
             new_board.set_row(i, new_row)
 
         for j in range(board.size):
-            column = board.column(j)
-            new_column = update_line(column, new_board.row_patterns[j])
+            column = new_board.column(j)
+            new_column = update_line(column, new_board.column_patterns[j])
             new_board.set_column(j, new_column)
 
         if (new_board == board):
