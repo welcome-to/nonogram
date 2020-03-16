@@ -46,15 +46,30 @@ class Board:
             self.data[y][column] = line[y]
 
 
-def update_line(line, pattern):
+def fill_exact_matches(line, pattern):
     if sum(pattern) + len(pattern) - 1 == 15:
-        line = [1 for _ in range(15)]
+        line = [TRUE for _ in range(15)]
         j = 0
         for i in range(len(pattern)):
             j += pattern[i]
             if j + 1 < 15:
-                line[j+1]==-1
+                line[j+1] == FALSE
+    return line
 
+def mark_existing_centers(line, pattern):
+    return line
+
+def mark_from_exact_starts(line, border):
+    return line
+
+def mark_missing_borders(line, pattern):
+    return line
+
+def update_line(line, pattern):
+    line = fill_exact_matches(line, pattern)
+    line = mark_missing_borders(line, pattern)
+    line = mark_existing_centers(line, pattern)
+    line = mark_from_exact_starts(line, pattern)
     return line
 
 
