@@ -72,9 +72,25 @@ def mark_from_exact_starts(line, border):
     return line
 
 def mark_missing_borders(line, pattern):
+    def rindex(line, item):
+        return len(line) - list(reversed(line)).index(item) - 1
+
+    if len(pattern) > 1 or TRUE not in line:
+        return line
+
+    s, e = line.index(TRUE), rindex(line, TRUE)
+    part = e - s + 1
+    remaining = pattern[0] - (e - s + 1)
+
+    for i in set(range(s - remaining)) | set(range(e + 1 + remaining, len(line))):
+        line[i] = FALSE
+
     return line
 
 def mark_too_short_missing(line, pattern):
+    return line
+
+def fill_full_lines(line, pattern):
     return line
 
 def update_line(line, pattern):
@@ -84,6 +100,8 @@ def update_line(line, pattern):
     line = mark_too_short_missing(line, pattern)
     line = mark_missing_borders(line, pattern)
     line = mark_from_exact_starts(line, pattern)
+    # fixme
+    line = fill_full_lines(line, pattern)
     return line
 
 
@@ -113,3 +131,11 @@ def main():
 
 if __name__ == "__main__":
     main()
+    """
+    line = [UNKNOWN for _ in range(4)] + [TRUE for _ in range(10)] + [UNKNOWN]
+    print(line)
+    pattern = [10]
+    result = mark_missing_borders(line, pattern)
+    print(result)
+    """
+    
