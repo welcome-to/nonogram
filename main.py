@@ -50,8 +50,19 @@ class Board:
 
 
 def is_line_correct(line,pattern):
-    # fixme
-    return True
+    real_patern = []
+    current_segment = 0
+    for i in line:
+        if i == UNKNOWN:
+            raise RuntimeError("Невозможно устоновить коректность, строка не полна")
+        elif i == TRUE:
+            current_segment += 1
+        else:
+            if current_segment !=0:
+                real_patern.append(current_segment)
+            current_segment = 0
+
+    return real_patern == pattern
 
 
 def fill_exact_matches(line, pattern):
