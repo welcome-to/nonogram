@@ -57,6 +57,17 @@ def fill_exact_matches(line, pattern):
     return line
 
 def mark_existing_centers(line, pattern):
+    size = len(line)
+    if pattern == [14]:
+        print("Dick")
+
+    pattern_size = sum(pattern) + len(pattern) - 1
+    if pattern_size > 7 and len(pattern) <= 2:
+        print(pattern)
+        for i in range(size - pattern_size, size - pattern_size + max(0,pattern[0]- (size - pattern_size))):
+            line[i] = TRUE
+        for i in range(pattern_size,pattern_size - max(0, pattern[-1]- (size - pattern_size)),-1):
+            line[i-1] = TRUE
     return line
 
 def mark_from_exact_starts(line, border):
