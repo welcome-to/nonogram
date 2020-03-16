@@ -29,10 +29,13 @@ class Board:
         return all(map(lambda r: self.is_filled(row=r),  range(self.size)))
 
     def is_correct(self):
-        pass
+        for i in range(self.size):
+            if not is_line_correct(self.row(i),self.row_patterns[i]):
+                return False
+            if not is_line_correct(self.row(i),self.row_patterns[i]):
+                return False
 
     def __eq__(self, other):
-        # fixme
         return self.data == other.data
 
     def __str__(self):
@@ -44,6 +47,11 @@ class Board:
     def set_column(self, column, line):
         for y in range(self.size):
             self.data[y][column] = line[y]
+
+
+def is_line_correct(line,pattern):
+    # fixme
+    return True
 
 
 def fill_exact_matches(line, pattern):
