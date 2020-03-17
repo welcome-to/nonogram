@@ -106,7 +106,22 @@ def mark_missing_borders(line, pattern):
 
     return line
 
+def fill(line, start, end, value):
+    for j in range(start, end):
+        line[j] = value
+
 def mark_too_short_missing(line, pattern):
+    shortest = min(pattern)
+
+    first = 0
+    for i in range(1, len(line)):
+        if line[i-1] == FALSE and line[i] == UNKNOWN:
+            first = i
+        if line[i-1] == UNKNOWN and line[i] == FALSE:
+            if i - first < shortest:
+                fill(line, first, i, FALSE)
+    if line[-1] == UNKNOWN and len(line) - first < shortest:
+        fill(line, first, len(line), FALSE)
     return line
 
 def fill_full_lines(line, pattern):
@@ -149,7 +164,7 @@ def main():
     print(board)
 
 if __name__ == "__main__":
-    main()
+    #main()
     """
     line = [UNKNOWN for _ in range(4)] + [TRUE for _ in range(10)] + [UNKNOWN]
     print(line)
@@ -157,4 +172,15 @@ if __name__ == "__main__":
     result = mark_missing_borders(line, pattern)
     print(result)
     """
-    
+    pattern = [4]
+    line = [
+        UNKNOWN,
+        UNKNOWN,
+        FALSE,
+        UNKNOWN,
+        FALSE,
+        UNKNOWN,
+        UNKNOWN,
+        UNKNOWN]
+    print(line)
+    print(mark_too_short_missing(line, pattern))
