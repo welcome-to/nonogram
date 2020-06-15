@@ -72,9 +72,9 @@ def fill_exact_matches(line, pattern):
         line = [TRUE for _ in range(15)]
         j = 0
         for i in range(len(pattern)):
-            j += pattern[i]
-            if j + 1 < 15:
-                line[j+1] == FALSE
+            j += pattern[i] + 1
+            if j < 15:
+                line[j-1] = FALSE
     return line
 
 def mark_existing_centers(line, pattern):
