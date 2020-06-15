@@ -1,3 +1,5 @@
+from data import *
+
 from copy import copy, deepcopy
 
 TRUE = 1
@@ -80,14 +82,40 @@ def mark_existing_centers(line, pattern):
 
     pattern_size = sum(pattern) + len(pattern) - 1
     if 2 * pattern_size > len(line):
-        print(pattern)
+        #print(pattern)
         for i in range(size - pattern_size, size - pattern_size + max(0,pattern[0]- (size - pattern_size))):
             line[i] = TRUE
         for i in range(pattern_size,pattern_size - max(0, pattern[-1]- (size - pattern_size)),-1):
             line[i-1] = TRUE
     return line
 
-def mark_from_exact_starts(line, border):
+#def mark_from_exact_starts(line, pattern):
+#    return line
+
+def mark_from_inexact_start(line, pattern):
+    #print("Line: {0}, pattern: {1}".format(line, pattern))
+    for i in range(len(line)):
+        if line[i] != FALSE:
+            break
+    start = i
+
+    first = pattern[0]
+    if not all(map(lambda x: x != FALSE, line[i:i + first])):
+        return line
+
+    for i in range(i, len(line)):
+        if line[i] == UNKNOWN:
+            continue
+        if line[i] == FALSE:
+            return line
+        else:
+            break
+        i += 1
+
+    #print(start, i, first)
+    for j in range(i, i + first - (i - start)):
+        line[j] = TRUE
+
     return line
 
 def mark_missing_borders(line, pattern):
@@ -124,26 +152,47 @@ def mark_too_short_missing(line, pattern):
         fill(line, first, len(line), FALSE)
     return line
 
+
 def fill_full_lines(line, pattern):
     return line
 
+# Returns tuple (new_line, new_pattern)
+# FIXME: we also need `how many items did we get rid of`
+def extract_unknown_tail(line, pattern):
+    new_line = line
+    new_pattern = pattern
+    try:
+        while pattern:
+            start = new_line.index(TRUE)
+            end = start + new_pattern[0]
+            if not all(map(lambda item: item == TRUE, line[start:end])):
+                return new_line, new_pattern
+            new_line = new_line[end:]
+            new_pattern = new_pattern[1:]
+    except ValueError:
+        return new_line, new_pattern
+    # this is excess
+    return new_line, new_pattern
+
+def extract_unknown_part(line, pattern):
+    #fixme
+    return extract_unknown_tail(line, pattern)
+
 def update_line(line, pattern):
-    print("Called update_line with pattern", pattern)
+    #print("Called update_line with pattern", pattern)
     line = fill_exact_matches(line, pattern)
     line = mark_existing_centers(line, pattern)
     line = mark_too_short_missing(line, pattern)
     line = mark_missing_borders(line, pattern)
-    line = mark_from_exact_starts(line, pattern)
+    line = mark_from_inexact_start(line, pattern)
     # fixme
     line = fill_full_lines(line, pattern)
     return line
 
 
-def main():
-    rows = [[4],[8],[10],[11],[11],[11],[2,2,4],[1,3,2,3],[1,5,2,3],[1,5,2,3],[1,3,3,3],[2,4,2],[11],[9],[7]]
-    columns = [[5],[1,3],[1,2,3],[5,3],[3,4,3],[4,4,3],[5,2,3],[5,4],[7,5],[14],[6,6],[7],[11],[11],[9]]
+def main(rows, columns):
+    #rows, columns = feb16data()
     board = Board(15, rows, columns)
-
     while not board.is_complete():
         new_board = Board(board.size, board.row_patterns, board.column_patterns)
         for i in range(board.size):
@@ -164,23 +213,4 @@ def main():
     print(board)
 
 if __name__ == "__main__":
-    #main()
-    """
-    line = [UNKNOWN for _ in range(4)] + [TRUE for _ in range(10)] + [UNKNOWN]
-    print(line)
-    pattern = [10]
-    result = mark_missing_borders(line, pattern)
-    print(result)
-    """
-    pattern = [4]
-    line = [
-        UNKNOWN,
-        UNKNOWN,
-        FALSE,
-        UNKNOWN,
-        FALSE,
-        UNKNOWN,
-        UNKNOWN,
-        UNKNOWN]
-    print(line)
-    print(mark_too_short_missing(line, pattern))
+    main(*pets_data())
