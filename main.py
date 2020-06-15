@@ -51,11 +51,11 @@ class Board:
             self.data[y][column] = line[y]
 
 
-def is_line_correct(line,pattern):
+def is_line_correct(line,pattern,no_err=False):
     real_patern = []
     current_segment = 0
     for i in line:
-        if i == UNKNOWN:
+        if i == UNKNOWN and not no_err:
             raise RuntimeError("Невозможно устоновить коректность, строка не полна")
         elif i == TRUE:
             current_segment += 1
@@ -190,9 +190,20 @@ def update_line(line, pattern):
     return line
 
 
-def main(rows, columns):
+def pos_lines(row):
+    ans = []
+    for i in range(len(row)):
+        if row[i] == UNKNOWN:
+            t = copy(row)
+            t[i] = TRUE
+            ans.append(t)
+    return ans
+
+
+def main(rows, columns,board=None):
     #rows, columns = feb16data()
-    board = Board(15, rows, columns)
+    if board is None:
+        board = Board(15, rows, columns)
     while not board.is_complete():
         new_board = Board(board.size, board.row_patterns, board.column_patterns)
         for i in range(board.size):
@@ -206,11 +217,25 @@ def main(rows, columns):
             new_board.set_column(j, new_column)
 
         if (new_board == board):
+            for i in range(len(board.data)):
+                if not is_line_correct(board.data[i],board.row_patterns[i],no_err=True):
+                    for line in pos_lines(board.data[i]): 
+                        old_board = deepcopy(board)
+                        board.data[i]=line
+                        t = main(board.row_patterns,board.column_patterns,board=board)
+                        if t[0]:
+                            return t[1]
+                        else:
+                            board = deepcopy(old_board)
+                            del old_board
+
+
+
             print(new_board)
             raise RuntimeError("Эвристик не хватило")
 
         board = new_board
-    print(board)
+    return (board.is_complete() and board.is_correct(),board)
 
 if __name__ == "__main__":
-    main(*pets_data())
+    print(main(*pets_data()))
