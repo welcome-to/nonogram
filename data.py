@@ -98,3 +98,20 @@ def pets_data():
         [5]
     ]
     return rows, columns
+
+def small_data():
+    rows = [
+        [4],
+        [4],
+        [2, 1],
+        [5],
+        [4]
+    ]
+    columns = [
+        [1, 3],
+        [5],
+        [2, 2],
+        [5],
+        [1, 1]
+    ]
+    return rows, columns

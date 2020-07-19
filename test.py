@@ -20,10 +20,19 @@ def test_inexact():
     print("AFTER:", mark_from_inexact_start(line, pattern))
 
 
+def test_centers():
+    pattern = [11, 2]
+    line = [UNKNOWN for _ in range(15)]
+    print("BEFORE:", line)
+    print("AFTER:", mark_existing_centers(line, pattern))
+
+
 def test_exact():
     pattern = [13, 1]
     line = [UNKNOWN for _ in range(15)]
     print("BEFORE:", line)
     print("AFTER:", fill_exact_matches(line, pattern))
 
-test_exact()
+#test_exact()
+test_centers()
+

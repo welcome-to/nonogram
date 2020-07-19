@@ -1,4 +1,5 @@
 from data import *
+from heuristics import *
 
 from copy import copy, deepcopy
 
@@ -66,7 +67,9 @@ def is_line_correct(line,pattern,no_err=False):
 
     return real_patern == pattern
 
-
+"""
+Если суммарная длина отрезков вместе с пробелами равна стороне, то положение клеточек определено однозначно.
+"""
 def fill_exact_matches(line, pattern):
     if sum(pattern) + len(pattern) - 1 == 15:
         line = [TRUE for _ in range(15)]
@@ -77,6 +80,9 @@ def fill_exact_matches(line, pattern):
                 line[j-1] = FALSE
     return line
 
+"""
+Отметим те (центральные) части достаточно длинных кусков, про которые уже всё ясно
+"""
 def mark_existing_centers(line, pattern):
     size = len(line)
 
@@ -154,6 +160,10 @@ def mark_too_short_missing(line, pattern):
 
 
 def fill_full_lines(line, pattern):
+    grouped = groupby(line, key=lambda x: {TRUE: TRUE, FALSE: FALSE, UNKNOWN: FALSE}[x])
+    true_pattern = [len(list(group)) for key, group in filter(lambda item: item[0] == TRUE, grouped)]
+    if true_pattern == pattern:
+        line = [FALSE if item == UNKNOWN else item for item in line]
     return line
 
 # Returns tuple (new_line, new_pattern)
@@ -199,11 +209,11 @@ def pos_lines(row):
             ans.append(t)
     return ans
 
-
-def main(rows, columns,board=None):
-    #rows, columns = feb16data()
+"""
+def main(rows, columns, board=None):
     if board is None:
-        board = Board(15, rows, columns)
+        board = Board(5, rows, columns)
+
     while not board.is_complete():
         new_board = Board(board.size, board.row_patterns, board.column_patterns)
         for i in range(board.size):
@@ -229,13 +239,60 @@ def main(rows, columns,board=None):
                             board = deepcopy(old_board)
                             del old_board
 
-
-
             print(new_board)
-            raise RuntimeError("Эвристик не хватило")
+            #raise RuntimeError("Эвристик не хватило")
 
         board = new_board
     return (board.is_complete() and board.is_correct(),board)
+"""
+
+def main(rows, columns, board=None):
+    if board is None:
+        board = Board(len(rows), rows, columns)
+    
+    while not board.is_complete():
+        new_board = update_lines(board)
+
+        if (new_board == board):
+            """
+            for i in range(len(board.data)):
+                if not is_line_correct(board.data[i],board.row_patterns[i],no_err=True):
+                    for line in pos_lines(board.data[i]): 
+                        old_board = deepcopy(board)
+                        board.data[i]=line
+                        t = main(board.row_patterns,board.column_patterns,board=board)
+                        if t[0]:
+                            return t[1]
+                        else:
+                            board = deepcopy(old_board)
+                            del old_board
+
+            print(new_board)
+            """
+            print('Эвристик не хватило')
+            #print(new_board)
+            break
+
+        board = new_board
+
+    return board
+
+
+def update_lines(board):
+    new_board = Board(board.size, board.row_patterns, board.column_patterns)
+    for i in range(board.size):
+        row = board.row(i)
+        new_row = update_line(row, board.row_patterns[i])
+        new_board.set_row(i, new_row)
+
+    for j in range(board.size):
+        column = new_board.column(j)
+        new_column = update_line(column, new_board.column_patterns[j])
+        new_board.set_column(j, new_column)
+
+    return new_board
+
 
 if __name__ == "__main__":
-    print(main(*pets_data()))
+    #print(main(*pets_data()))
+    print(main(*small_data()))
